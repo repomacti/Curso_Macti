@@ -67,14 +67,26 @@ path = os.getcwd() + '/'
 # Nombre del curso original
 c_name = input(' Nombre del curso : ')
 
+try:
+    os.chdir(c_name)
+
+except FileNotFoundError:
+    print(' Nombre del curso: ' + Fore.GREEN + '{}'.format(c_name) + Style.RESET_ALL + ' erróneo')
+    sys.exit(Fore.WHITE + Back.RED + '\n Termina el proceso anticipandamente.' + Style.RESET_ALL)
+else:
+    path_c_name = path + c_name
+    print('Directorio actual: ' + Fore.GREEN + '{}'.format(path_c_name) + Style.RESET_ALL)
 # Path absoluto al curso original
-path_c_name = path + c_name
 
 # Nombre del curso con extension _nbg
-c_name_nbg = c_name + '_nbg'
+# Directorio nbg
+#c_name_nbg = c_name + '_nbg'
+c_name_nbg = 'nbg'
 
 # Path absoluto al curso con extension _nbg
-path_c_name_nbg = path + c_name + '_nbg'
+# Path absoluto al directorio nbg
+#path_c_name_nbg = path + c_name + '_nbg'
+path_c_name_nbg = path_c_name + '/nbg'
 
 #-------- INICIALIZACIÓN DEL DIRECTORIO CON NBGRADER --------
 
