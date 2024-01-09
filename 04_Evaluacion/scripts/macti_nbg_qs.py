@@ -6,43 +6,43 @@ import os, sys, shutil
 from colorama import Fore, Back, Style
 import pandas as pd
 
-def init_course_nbgrader(path, home, path_c_name_nbg):
+def init_course_nbgrader(c_name, home, path_c_name_nbg):
     """
     Inicializa el directorio con NBGRADER y modifica la ruta 
     c.CourseDirectory.root dentro del archivo nbgrader_config.py 
     de acuerdo con la ruta del directorio del curso.
     """
     print(Fore.WHITE + Back.MAGENTA + '\n --> Inicializando el directorio para ' + Style.BRIGHT + 'NBGRADER \n' + Style.RESET_ALL)
+
+    # Primero se crea el directorio nbg
+    os.makedirs(path_c_name_nbg, exist_ok=True)
+    
     nbgrader_qs = 'nbgrader quickstart ' + path_c_name_nbg
     print('nbgrader quickstart ' + Style.NORMAL + Fore.GREEN + path_c_name_nbg + Style.RESET_ALL)
 
     # Inicializamos el curso para NBGRADER 
     os.system(nbgrader_qs)
 
-    # Agregamos la ruta del curso para NBGRADER en el archivo de 
-    # configuración nbgrader_config.py
-    print(Fore.WHITE + Back.MAGENTA + ' --> Modificando el parámetro:' + Fore.RED + Back.RESET + ' c.CourseDirectory.root ' + Back.WHITE + Style.RESET_ALL + '\n')
+    # Construimos un nuevo nbgrader_config.py 
+    lines = []
+    lines.append("c = get_config() \n\n")
+    lines.append("#"*40 + "\n")
+    lines.append("# MACTI: nbgrader_config.py \n")
+    lines.append("#"*40 + "\n")
+    lines.append('c.CourseDirectory.course_id = "'+ c_name +'" \n')
+    lines.append('c.IncludeHeaderFooter.header = "source/header.ipynb" \n')
+    lines.append('c.Exchange.root = "/usr/local/share/nbgrader/exchange" \n')
+    lines.append('c.CourseDirectory.root = "' + path_c_name_nbg + '" \n')
 
-    # Leemos el archivo nbgrader_config.py
-    with open(path_c_name_nbg + "/nbgrader_config.py", "r") as f:
-        all_file = f.readlines()
-
-    # Textos a substituir
-    old_text = "# c.CourseDirectory.root = ''"
-    new_text = 'c.CourseDirectory.root = "' + path_c_name_nbg + '" \n' 
-
-    # Escribimos el archivo nbgrader_config.py con el nuevo texto
-    with open(path_c_name_nbg + "/nbgrader_config.py", "w") as f:
-        for line in all_file:        
-            if old_text in line:
-                f.writelines(new_text)
-            else:
-                f.writelines(line)
+    # Escribimos el archivo
+    with open(path_c_name_nbg + "nbgrader_config.py", "w") as f:
+        f.writelines(lines)
                 
-    print(Fore.WHITE + Back.MAGENTA + ' --> Copiando el archivo modificado' + Fore.GREEN + Back.RESET + ' nbgrader_config.py ' + Fore.BLACK + 'a' + Fore.GREEN + Back.RESET + ' {} '.format(home) + Back.WHITE + Style.RESET_ALL + '\n')
+    print(Fore.WHITE + Back.MAGENTA + ' --> Copiando el archivo ' + Fore.GREEN + Back.RESET + ' nbgrader_config.py ' + Fore.BLACK + 'a' + Fore.GREEN + Back.RESET + ' {} '.format(home + '.jupyter/') + Back.WHITE + Style.RESET_ALL + '\n')
     
-    # Copiamos el archvio nbgrader_config.py al home
-    shutil.copy2(path_c_name_nbg + "/nbgrader_config.py", home)
+    # Copiamos el archvio nbgrader_config.py al $HOME/.jupyter/
+    shutil.copy2(path_c_name_nbg + "nbgrader_config.py", home + '.jupyter/')
+    
 
 #-------- DEFINICION DE ALGUNAS RUTAS --------
 # Este script se debe ejecutar desde donde está el directorio
@@ -67,6 +67,7 @@ path = os.getcwd() + '/'
 # Nombre del curso original
 c_name = input(' Nombre del curso : ')
 
+# Verificamos que existe el directorio del curso
 try:
     os.chdir(c_name)
 
@@ -75,28 +76,23 @@ except FileNotFoundError:
     sys.exit(Fore.WHITE + Back.RED + '\n Termina el proceso anticipandamente.' + Style.RESET_ALL)
 else:
     path_c_name = path + c_name
-    print('Directorio actual: ' + Fore.GREEN + '{}'.format(path_c_name) + Style.RESET_ALL)
-# Path absoluto al curso original
+    print(' Directorio actual: ' + Fore.GREEN + '{}'.format(path_c_name) + Style.RESET_ALL)
+    
+# Subirectorio dentro del curso para configuración con NBGRADER
+c_name_nbg = '/nbg/GeoMaC/'
 
-# Nombre del curso con extension _nbg
-# Directorio nbg
-#c_name_nbg = c_name + '_nbg'
-c_name_nbg = 'nbg'
-
-# Path absoluto al curso con extension _nbg
 # Path absoluto al directorio nbg
-#path_c_name_nbg = path + c_name + '_nbg'
-path_c_name_nbg = path_c_name + '/nbg'
+path_c_name_nbg = path_c_name + c_name_nbg
 
 #-------- INICIALIZACIÓN DEL DIRECTORIO CON NBGRADER --------
 
-if c_name_nbg not in os.listdir():
+if 'nbg' not in os.listdir(path_c_name):
     # El directorio NO existe, se crea usando nbgrader quickstart ...
     continuar = input('\n Se configurará el siguiente directorio con NBGRADER: \n' + Fore.GREEN + ' {} '.format(path_c_name_nbg) + Style.RESET_ALL + '\n ¿continuar? Si [S], No [N] ' + Style.RESET_ALL)
     
     if continuar in ['S','s']:
         # Se inicializa el directorio con NBGRADER
-        init_course_nbgrader(path, home, path_c_name_nbg)
+        init_course_nbgrader(c_name, home, path_c_name_nbg)
     else:
         sys.exit(Fore.WHITE + Back.RED + '\n Termina el proceso anticipandamente.' + Style.RESET_ALL)
         
@@ -142,7 +138,7 @@ print()
 # Se recorren los topicos/temas (que son las columnas del DataFrame topic_list)
 for topic in topic_list:
     # Se construye el nombre en el directorio source. Se usa la ruta absoluta
-    p = path_c_name_nbg + '/source/' + topic
+    p = path_c_name_nbg + 'source/' + topic
     print(' Subdirectorio del tema:')
     if os.path.exists(p): 
         print(' ' + Fore.GREEN + '{}'.format(p) + Style.RESET_ALL + ' YA existe\n')
@@ -156,7 +152,7 @@ for topic in topic_list:
     for a in topic_list[topic]:
         if not isinstance(a, float): # Es necesario por si hay nan
             src = path_c_name + '/' + topic + '/' + a
-            dst = path_c_name_nbg + '/source/' + topic        
+            dst = path_c_name_nbg + 'source/' + topic        
             print(' Fuente: {} \n Destino: {}\n'.format(src, dst))
 
             # Se copian los archivos
