@@ -128,4 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-02_Herramientas/git_github/02_Herramientas/git_github/curso/
+02_Herramientas/git_github/curso/
+q*.ipynb
+.ans
