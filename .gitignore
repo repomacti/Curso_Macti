@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 02_Herramientas/git_github/curso/
-q*.ipynb
-.ans
+#q*.ipynb
+#.ans
