@@ -128,6 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+01_Intro/
 02_Herramientas/git_github/curso/
 03_Cuadernos_Interactivos/SymPy/
 03_Cuadernos_Interactivos/Widgets/
