@@ -133,5 +133,9 @@ dmypy.json
 03_Cuadernos_Interactivos/SymPy/
 03_Cuadernos_Interactivos/Widgets/
 03_Cuadernos_Interactivos/.ans
+03_Cuadernos_Interactivos/nbg
+03_Cuadernos_Interactivos/assignments_creation.csv
+03_Cuadernos_Interactivos/assignments_update.csv
+03_Cuadernos_Interactivos/macti_nbg_qs.py
 04_Evaluacion/
 05_Metodologias/
