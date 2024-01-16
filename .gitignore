@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 02_Herramientas/git_github/curso/
-03_Cuadernos_Interactivos/Sympy
-03_Cuadernos_Interactivos/Widgets
+03_Cuadernos_Interactivos/Sympy/
+03_Cuadernos_Interactivos/Widgets/
 q*.ipynb
 .ans
