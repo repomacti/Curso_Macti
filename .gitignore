@@ -131,5 +131,6 @@ dmypy.json
 02_Herramientas/git_github/curso/
 03_Cuadernos_Interactivos/SymPy/
 03_Cuadernos_Interactivos/Widgets/
-q*.ipynb
 03_Cuadernos_Interactivos/.ans
+04_Evaluacion/
+05_Metodologias/
